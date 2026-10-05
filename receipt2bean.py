@@ -18,11 +18,13 @@ import hashlib
 import io
 import json
 from pathlib import Path
+import subprocess
 import sys
+import tempfile
 import tomllib
 
 DEFAULT_MODEL = "qwen3-vl:8b"  # any Ollama vision model tag works: --model ...
-IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
+IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".pdf"}  # PDFs: first page only
 TOL = Decimal("0.02")  # rounding tolerance when checking the arithmetic
 CENT = Decimal("0.01")
 
@@ -121,9 +123,39 @@ def parse_date(raw) -> tuple[date, str | None]:
 
 
 # --------------------------------------------------------------- the model
+def pdf_first_page(path: Path) -> bytes:
+    """Render page 1 of a PDF (e.g. an online order receipt) to PNG using poppler's pdftoppm."""
+    with tempfile.TemporaryDirectory() as tmp:
+        stem = Path(tmp) / "page"
+        try:
+            subprocess.run(
+                [
+                    "pdftoppm",
+                    "-r",
+                    "150",
+                    "-png",
+                    "-f",
+                    "1",
+                    "-l",
+                    "1",
+                    "-singlefile",
+                    str(path),
+                    str(stem),
+                ],
+                check=True,
+                capture_output=True,
+            )
+        except FileNotFoundError:
+            raise RuntimeError("PDF support needs poppler-utils (the pdftoppm command)")
+        return stem.with_suffix(".png").read_bytes()
+
+
 def load_image_bytes(path: Path, max_side: int = 1600) -> bytes:
     """Read the image; shrink big phone photos if Pillow is installed."""
-    raw = path.read_bytes()
+    if path.suffix.lower() == ".pdf":
+        raw = pdf_first_page(path)
+    else:
+        raw = path.read_bytes()
     try:
         from PIL import Image, ImageOps
     except ImportError:

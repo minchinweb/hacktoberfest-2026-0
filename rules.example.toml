@@ -7,6 +7,9 @@ gst_account     = "Assets:GST-Receivable"
 # If the merchant name on the receipt CONTAINS the key (any case), use that account.
 [merchants]
 "staples"  = "Expenses:Office"
+"maple print" = "Expenses:Office"
+"prairie hardware" = "Expenses:Maintenance"
+"corner cafe" = "Expenses:Meals"
 "costco"   = "Expenses:Supplies"
 "home depot" = "Expenses:Maintenance"
 "petro"    = "Expenses:Vehicle:Fuel"
