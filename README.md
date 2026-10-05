@@ -13,7 +13,7 @@ machine.**
 customization is likely needed, and I'd like to eventually have a decent test
 suite too.
 
-```
+```text
 receipt photo --> open-weight vision model (Ollama) --> JSON
               --> Python: validate totals + GST, map accounts
               --> staging.bean  (pending "!" entries, reviewed before they join the ledger)
@@ -39,7 +39,7 @@ receipt photo --> open-weight vision model (Ollama) --> JSON
 
 1. Install [Ollama](https://ollama.com) and pull a vision model:
 
-   ```
+   ```cmd
    ollama pull qwen3-vl:8b      # check the Ollama library for current tags/sizes
    ```
 
@@ -47,7 +47,7 @@ receipt photo --> open-weight vision model (Ollama) --> JSON
    `--model`.
 2. Python 3.11+:
 
-   ```
+   ```cmd
    pip install -r requirements.txt
    ```
 
@@ -55,7 +55,7 @@ receipt photo --> open-weight vision model (Ollama) --> JSON
 
 ## Use
 
-```
+```cmd
 # one receipt, print the entry only
 python receipt2bean.py receipt.jpg --config rules.toml --dry-run
 
@@ -65,7 +65,7 @@ python receipt2bean.py ~/receipts/ --config rules.toml --out staging.bean
 
 Then, in your main ledger:
 
-```
+```beancount
 include "staging.bean"
 ```
 
@@ -80,11 +80,11 @@ PDFs (e.g. emailed online-order receipts) work too: page 1 is rendered with popp
 `samples/receipts/` holds three **fictional** receipts, and `samples/expected/` holds the
 correct answer for each, so you can measure accuracy honestly:
 
-| File | What it tests |
-|---|---|
-| `01_maple_print_order.jpg` | clean print-shop order, many line items |
-| `02_prairie_hardware_photo.jpg` | till receipt, rotated "phone photo" |
-| `03_corner_cafe_tip_photo.jpg` | has a tip, so subtotal + GST != total and the entry should get a `; REVIEW:` flag |
+| File                            | What it tests                                                                     |
+| ------------------------------- | --------------------------------------------------------------------------------- |
+| `01_maple_print_order.jpg`      | clean print-shop order, many line items                                           |
+| `02_prairie_hardware_photo.jpg` | till receipt, rotated "phone photo"                                               |
+| `03_corner_cafe_tip_photo.jpg`  | has a tip, so subtotal + GST != total and the entry should get a `; REVIEW:` flag |
 
 Regenerate with `python samples/make_sample_receipts.py`.
 
@@ -96,13 +96,13 @@ Real-world quirk: some stores round GST per line, so printed GST can differ from
 `samples/` has saved extractions. This exercises the validation and output code with no
 model running:
 
-```
+```cmd
 python receipt2bean.py samples/ --from-json --config rules.example.toml --dry-run
 ```
 
 ## Output example
 
-```
+```beancount
 2026-10-02 ! "Staples" "Printer paper and pens"
   receipt: "IMG_2041.jpg"
   receipt-sha: "67f51433225d"
@@ -119,9 +119,10 @@ python receipt2bean.py samples/ --from-json --config rules.example.toml --dry-ru
 - Refunds / negative totals are not handled.
 - HEIC photos aren't supported; set the phone camera to JPEG ("most
   compatible").
-- PDFs: first page only. HEIC photos aren't supported; set the phone camera to JPEG ("most compatible").
-- Accuracy depends on the model and photo quality. See the write-up for numbers from
-  real receipts.
+- PDFs: first page only. HEIC photos aren't supported; set the phone camera to
+  JPEG ("most compatible").
+- Accuracy depends on the model and photo quality. See the write-up for numbers
+  from real receipts.
 - Multi-currency and bank-statement matching are not implemented.
 
 ## Ideas next
