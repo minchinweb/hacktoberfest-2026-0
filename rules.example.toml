@@ -1,0 +1,19 @@
+# Copy to rules.toml and edit. Account names must match your Beancount ledger.
+currency        = "CAD"
+default_expense = "Expenses:Uncategorized"
+default_payment = "Liabilities:CreditCard"
+gst_account     = "Assets:GST-Receivable"
+
+# If the merchant name on the receipt CONTAINS the key (any case), use that account.
+[merchants]
+"staples"  = "Expenses:Office"
+"costco"   = "Expenses:Supplies"
+"home depot" = "Expenses:Maintenance"
+"petro"    = "Expenses:Vehicle:Fuel"
+"shell"    = "Expenses:Vehicle:Fuel"
+
+# If the payment method text CONTAINS the key, use that account.
+[payment_methods]
+"visa"       = "Liabilities:Visa"
+"mastercard" = "Liabilities:Mastercard"
+"debit"      = "Assets:Chequing"

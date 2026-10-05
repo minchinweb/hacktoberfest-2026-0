@@ -1,0 +1,2 @@
+ollama >= 0.4
+Pillow >= 10   # optional: shrinks big phone photos before sending them to the model
